@@ -1,14 +1,30 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, FieldError } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { buyerFormSchema, cityEnum, propertyTypeEnum, bhkEnum, purposeEnum, timelineEnum, sourceEnum } from '@/lib/db/schema';
 import { createBuyer } from '@/app/buyers/_actions/buyer-actions';
-import { useTransition } from 'react';
+import { useTransition, ReactNode } from 'react';
+import { toast } from 'react-hot-toast';
 
 // Define the type for our form data based on the Zod schema
 type BuyerFormData = z.infer<typeof buyerFormSchema>;
+
+// Helper component for form fields with proper TypeScript types
+const FormField = ({ name, label, children, error }: {
+  name: string;
+  label: string;
+  children: ReactNode;
+  error?: FieldError;
+}) => (
+  <div>
+    <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+    {children}
+    {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+  </div>
+);
+
 
 export function BuyerForm() {
   const [isPending, startTransition] = useTransition();
@@ -17,7 +33,8 @@ export function BuyerForm() {
     register,
     handleSubmit,
     formState: { errors },
-    watch, // To watch for changes in form fields
+    watch,
+    reset, // Get the reset function from the hook
   } = useForm<BuyerFormData>({
     resolver: zodResolver(buyerFormSchema),
   });
@@ -30,21 +47,13 @@ export function BuyerForm() {
     startTransition(async () => {
       const result = await createBuyer(data);
       if (result?.errors) {
-        // Here you can handle displaying server-side errors
-        console.error(result.errors);
-        alert('Server validation failed: ' + result.message);
+        toast.error(result.message || 'Server validation failed.');
+      } else {
+        toast.success('Lead created successfully!');
+        reset(); // Clear the form on successful submission
       }
     });
   };
-
-  // Helper component for form fields to reduce repetition
-  const FormField = ({ name, label, children, error }: any) => (
-    <div className="mb-4">
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      {children}
-      {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-    </div>
-  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
@@ -60,11 +69,13 @@ export function BuyerForm() {
         </FormField>
         <FormField name="city" label="City" error={errors.city}>
           <select id="city" {...register('city')} className="input-style">
+            <option value="">Select City</option>
             {cityEnum.enumValues.map(city => <option key={city} value={city}>{city}</option>)}
           </select>
         </FormField>
         <FormField name="propertyType" label="Property Type" error={errors.propertyType}>
           <select id="propertyType" {...register('propertyType')} className="input-style">
+            <option value="">Select Property Type</option>
             {propertyTypeEnum.enumValues.map(type => <option key={type} value={type}>{type}</option>)}
           </select>
         </FormField>
@@ -78,11 +89,13 @@ export function BuyerForm() {
         )}
         <FormField name="purpose" label="Purpose" error={errors.purpose}>
           <select id="purpose" {...register('purpose')} className="input-style">
+            <option value="">Select Purpose</option>
             {purposeEnum.enumValues.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
         </FormField>
         <FormField name="timeline" label="Timeline" error={errors.timeline}>
           <select id="timeline" {...register('timeline')} className="input-style">
+            <option value="">Select Timeline</option>
             {timelineEnum.enumValues.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </FormField>
@@ -94,6 +107,7 @@ export function BuyerForm() {
         </FormField>
         <FormField name="source" label="Lead Source" error={errors.source}>
           <select id="source" {...register('source')} className="input-style">
+            <option value="">Select Source</option>
             {sourceEnum.enumValues.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </FormField>
@@ -102,22 +116,9 @@ export function BuyerForm() {
         <textarea id="notes" {...register('notes')} rows={4} className="input-style" />
       </FormField>
 
-      <button type="submit" disabled={isPending} className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400">
+      <button type="submit" disabled={isPending} className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
         {isPending ? 'Submitting...' : 'Create Lead'}
       </button>
     </form>
   );
 }
-
-// Add this to your global CSS file (e.g., app/globals.css) for basic input styling
-/*
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer components {
-  .input-style {
-    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
-  }
-}
-*/

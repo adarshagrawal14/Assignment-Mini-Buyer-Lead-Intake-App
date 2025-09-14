@@ -23,7 +23,7 @@ export async function createBuyer(formData: unknown) {
 
   try {
     // 2. Perform the database operations in a transaction
-    const newBuyer = await db.transaction(async (tx) => {
+      await db.transaction(async (tx) => {
       const [result] = await tx.insert(buyers).values({
         fullName: data.fullName,
         email: data.email,

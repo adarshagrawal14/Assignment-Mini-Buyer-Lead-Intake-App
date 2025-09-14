@@ -1,5 +1,4 @@
 import { pgTable, uuid, varchar, text, integer, timestamp, pgEnum, jsonb, uniqueIndex } from 'drizzle-orm/pg-core';
-import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 // ENUMS
