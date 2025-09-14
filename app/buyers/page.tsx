@@ -6,11 +6,17 @@ import { buyers } from "@/lib/db/schema";
 
 export default async function BuyersPage() {
   // --- TEMPORARY DEBUGGING LOG ---
-  // This will print the environment variable to the Vercel build logs.
-  console.log("VERCEL_DATABASE_URL:", process.env.DATABASE_URL ? "Exists" : "MISSING or empty");
+  // This will print a censored version of the environment variable to the Vercel build logs.
+  if (process.env.DATABASE_URL) {
+    console.log("VERCEL_DATABASE_URL found.");
+    // Replace the password with <password> for security before printing.
+    const censoredUrl = process.env.DATABASE_URL.replace(/:[^:]+@/, ":<password>@");
+    console.log("Censored URL:", censoredUrl);
+  } else {
+    console.log("VERCEL_DATABASE_URL IS MISSING or empty");
+  }
   // --- END DEBUGGING LOG ---
 
-  // 1. Fetch the 10 most recent leads from the database.
   const leads = await db.query.buyers.findMany({
     orderBy: [desc(buyers.updatedAt)],
     limit: 10,
@@ -31,8 +37,6 @@ export default async function BuyersPage() {
           </button>
         </Link>
       </div>
-
-      {/* 2. Pass the fetched leads to the table component */}
       <BuyerTable leads={leads} />
     </main>
   );
