@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm, FieldError } from 'react-hook-form';
+import { useForm, FieldError, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { buyerFormSchema, cityEnum, propertyTypeEnum, bhkEnum, purposeEnum, timelineEnum, sourceEnum } from '@/lib/db/schema';
@@ -34,16 +34,23 @@ export function BuyerForm() {
     handleSubmit,
     formState: { errors },
     watch,
-    reset, // Get the reset function from the hook
+    reset,
   } = useForm<BuyerFormData>({
     resolver: zodResolver(buyerFormSchema),
+    // Set default values to prevent uncontrolled component warnings
+    defaultValues: {
+      fullName: "",
+      phone: "",
+      email: "",
+      notes: "",
+    }
   });
 
-  // Watch the 'propertyType' field to conditionally show the 'bhk' field
   const propertyType = watch('propertyType');
   const showBhkField = propertyType === 'Apartment' || propertyType === 'Villa';
 
-  const onSubmit = (data: BuyerFormData) => {
+  // Explicitly type the onSubmit handler for maximum type safety
+  const processForm: SubmitHandler<BuyerFormData> = (data) => {
     startTransition(async () => {
       const result = await createBuyer(data);
       if (result?.errors) {
@@ -56,8 +63,9 @@ export function BuyerForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
+    <form onSubmit={handleSubmit(processForm)} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Your FormField components go here, no changes needed for them */}
         <FormField name="fullName" label="Full Name" error={errors.fullName}>
           <input id="fullName" {...register('fullName')} className="input-style" />
         </FormField>
