@@ -1,0 +1,123 @@
+'use client';
+
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { buyerFormSchema, cityEnum, propertyTypeEnum, bhkEnum, purposeEnum, timelineEnum, sourceEnum } from '@/lib/db/schema';
+import { createBuyer } from '@/app/buyers/_actions/buyer-actions';
+import { useTransition } from 'react';
+
+// Define the type for our form data based on the Zod schema
+type BuyerFormData = z.infer<typeof buyerFormSchema>;
+
+export function BuyerForm() {
+  const [isPending, startTransition] = useTransition();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch, // To watch for changes in form fields
+  } = useForm<BuyerFormData>({
+    resolver: zodResolver(buyerFormSchema),
+  });
+
+  // Watch the 'propertyType' field to conditionally show the 'bhk' field
+  const propertyType = watch('propertyType');
+  const showBhkField = propertyType === 'Apartment' || propertyType === 'Villa';
+
+  const onSubmit = (data: BuyerFormData) => {
+    startTransition(async () => {
+      const result = await createBuyer(data);
+      if (result?.errors) {
+        // Here you can handle displaying server-side errors
+        console.error(result.errors);
+        alert('Server validation failed: ' + result.message);
+      }
+    });
+  };
+
+  // Helper component for form fields to reduce repetition
+  const FormField = ({ name, label, children, error }: any) => (
+    <div className="mb-4">
+      <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      {children}
+      {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+    </div>
+  );
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField name="fullName" label="Full Name" error={errors.fullName}>
+          <input id="fullName" {...register('fullName')} className="input-style" />
+        </FormField>
+        <FormField name="phone" label="Phone Number" error={errors.phone}>
+          <input id="phone" type="tel" {...register('phone')} className="input-style" />
+        </FormField>
+        <FormField name="email" label="Email (Optional)" error={errors.email}>
+          <input id="email" type="email" {...register('email')} className="input-style" />
+        </FormField>
+        <FormField name="city" label="City" error={errors.city}>
+          <select id="city" {...register('city')} className="input-style">
+            {cityEnum.enumValues.map(city => <option key={city} value={city}>{city}</option>)}
+          </select>
+        </FormField>
+        <FormField name="propertyType" label="Property Type" error={errors.propertyType}>
+          <select id="propertyType" {...register('propertyType')} className="input-style">
+            {propertyTypeEnum.enumValues.map(type => <option key={type} value={type}>{type}</option>)}
+          </select>
+        </FormField>
+        {showBhkField && (
+          <FormField name="bhk" label="BHK" error={errors.bhk}>
+            <select id="bhk" {...register('bhk')} className="input-style">
+              <option value="">Select BHK</option>
+              {bhkEnum.enumValues.map(bhk => <option key={bhk} value={bhk}>{bhk}</option>)}
+            </select>
+          </FormField>
+        )}
+        <FormField name="purpose" label="Purpose" error={errors.purpose}>
+          <select id="purpose" {...register('purpose')} className="input-style">
+            {purposeEnum.enumValues.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </FormField>
+        <FormField name="timeline" label="Timeline" error={errors.timeline}>
+          <select id="timeline" {...register('timeline')} className="input-style">
+            {timelineEnum.enumValues.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </FormField>
+        <FormField name="budgetMin" label="Min Budget (INR, Optional)" error={errors.budgetMin}>
+          <input id="budgetMin" type="number" {...register('budgetMin')} className="input-style" />
+        </FormField>
+        <FormField name="budgetMax" label="Max Budget (INR, Optional)" error={errors.budgetMax}>
+          <input id="budgetMax" type="number" {...register('budgetMax')} className="input-style" />
+        </FormField>
+        <FormField name="source" label="Lead Source" error={errors.source}>
+          <select id="source" {...register('source')} className="input-style">
+            {sourceEnum.enumValues.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </FormField>
+      </div>
+      <FormField name="notes" label="Notes (Optional)" error={errors.notes}>
+        <textarea id="notes" {...register('notes')} rows={4} className="input-style" />
+      </FormField>
+
+      <button type="submit" disabled={isPending} className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400">
+        {isPending ? 'Submitting...' : 'Create Lead'}
+      </button>
+    </form>
+  );
+}
+
+// Add this to your global CSS file (e.g., app/globals.css) for basic input styling
+/*
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .input-style {
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+  }
+}
+*/
