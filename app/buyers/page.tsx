@@ -5,6 +5,11 @@ import { desc } from "drizzle-orm";
 import { buyers } from "@/lib/db/schema";
 
 export default async function BuyersPage() {
+  // --- TEMPORARY DEBUGGING LOG ---
+  // This will print the environment variable to the Vercel build logs.
+  console.log("VERCEL_DATABASE_URL:", process.env.DATABASE_URL ? "Exists" : "MISSING or empty");
+  // --- END DEBUGGING LOG ---
+
   // 1. Fetch the 10 most recent leads from the database.
   const leads = await db.query.buyers.findMany({
     orderBy: [desc(buyers.updatedAt)],
@@ -32,3 +37,4 @@ export default async function BuyersPage() {
     </main>
   );
 }
+
