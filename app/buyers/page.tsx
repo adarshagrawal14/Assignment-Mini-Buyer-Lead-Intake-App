@@ -4,19 +4,11 @@ import { BuyerTable } from "./_components/buyer-table";
 import { desc } from "drizzle-orm";
 import { buyers } from "@/lib/db/schema";
 
-export default async function BuyersPage() {
-  // --- TEMPORARY DEBUGGING LOG ---
-  // This will print a censored version of the environment variable to the Vercel build logs.
-  if (process.env.DATABASE_URL) {
-    console.log("VERCEL_DATABASE_URL found.");
-    // Replace the password with <password> for security before printing.
-    const censoredUrl = process.env.DATABASE_URL.replace(/:[^:]+@/, ":<password>@");
-    console.log("Censored URL:", censoredUrl);
-  } else {
-    console.log("VERCEL_DATABASE_URL IS MISSING or empty");
-  }
-  // --- END DEBUGGING LOG ---
+// This is the crucial line that solves the build error.
+// It tells Next.js to render this page dynamically on the server at request time.
+export const dynamic = 'force-dynamic';
 
+export default async function BuyersPage() {
   const leads = await db.query.buyers.findMany({
     orderBy: [desc(buyers.updatedAt)],
     limit: 10,
