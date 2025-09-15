@@ -9,18 +9,6 @@ import { buyers } from "@/lib/db/schema";
 export const dynamic = 'force-dynamic';
 
 export default async function BuyersPage() {
-  // --- TEMPORARY DEBUGGING LOG ---
-  // This code will run on your server and print to your local terminal.
-  // It helps us verify if the .env file is being loaded correctly.
-  console.log("\n--- LOCAL ENV CHECK ---");
-  if (process.env.DATABASE_URL) {
-    console.log("✅ DATABASE_URL was found by the local server.");
-  } else {
-    console.log("❌ ERROR: DATABASE_URL IS MISSING or not loaded!");
-  }
-  console.log("----------------------\n");
-  // --- END DEBUGGING LOG ---
-
   const leads = await db.query.buyers.findMany({
     orderBy: [desc(buyers.updatedAt)],
     limit: 10,
@@ -31,7 +19,7 @@ export default async function BuyersPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Buyer Leads</h1>
-          <p className="text-muted-foreground">
+          <p className="text-gray-500">
             A list of all buyer leads in the system.
           </p>
         </div>
