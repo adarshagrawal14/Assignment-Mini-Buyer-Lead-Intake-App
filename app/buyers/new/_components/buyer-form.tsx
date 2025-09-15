@@ -43,12 +43,12 @@ export function BuyerForm() {
       phone: "",
       email: "",
       notes: "",
-      city: "",
-      propertyType: "",
-      bhk: "",
-      purpose: "",
-      timeline: "",
-      source: "",
+      city: undefined,
+      propertyType: undefined,
+      bhk: undefined,
+      purpose: undefined,
+      timeline: undefined,
+      source: undefined,
     }
   });
 
