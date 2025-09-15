@@ -69,7 +69,7 @@ export function BuyerForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(processForm)} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
+    <form onSubmit={handleSubmit(processForm)} className="space-y-6 bg-white p-6 rounded-lg shadow-md" autoComplete="off" noValidate>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Your FormField components go here, no changes needed for them */}
         <FormField name="fullName" label="Full Name" error={errors.fullName}>
@@ -82,33 +82,33 @@ export function BuyerForm() {
           <input id="email" type="email" {...register('email')} className="input-style" />
         </FormField>
         <FormField name="city" label="City" error={errors.city}>
-          <select id="city" {...register('city', { required: 'Please select a city' })} className="input-style" aria-invalid={!!errors.city}>
+          <select id="city" defaultValue="" autoComplete="off" {...register('city', { required: 'Please select a city' })} className="input-style" aria-invalid={!!errors.city}>
             <option value="" disabled>Select City</option>
             {cityEnum.enumValues.map(city => <option key={city} value={city}>{city}</option>)}
           </select>
         </FormField>
         <FormField name="propertyType" label="Property Type" error={errors.propertyType}>
-          <select id="propertyType" {...register('propertyType', { required: 'Please select a property type' })} className="input-style" aria-invalid={!!errors.propertyType}>
+          <select id="propertyType" defaultValue="" autoComplete="off" {...register('propertyType', { required: 'Please select a property type' })} className="input-style" aria-invalid={!!errors.propertyType}>
             <option value="" disabled>Select Property Type</option>
             {propertyTypeEnum.enumValues.map(type => <option key={type} value={type}>{type}</option>)}
           </select>
         </FormField>
         {showBhkField && (
           <FormField name="bhk" label="BHK" error={errors.bhk}>
-            <select id="bhk" {...register('bhk', { required: 'Please select BHK' })} className="input-style" aria-invalid={!!errors.bhk}>
+            <select id="bhk" defaultValue="" autoComplete="off" {...register('bhk', { required: 'Please select BHK' })} className="input-style" aria-invalid={!!errors.bhk}>
               <option value="" disabled>Select BHK</option>
               {bhkEnum.enumValues.map(bhk => <option key={bhk} value={bhk}>{bhk}</option>)}
             </select>
           </FormField>
         )}
         <FormField name="purpose" label="Purpose" error={errors.purpose}>
-          <select id="purpose" {...register('purpose', { required: 'Please select a purpose' })} className="input-style" aria-invalid={!!errors.purpose}>
+          <select id="purpose" defaultValue="" autoComplete="off" {...register('purpose', { required: 'Please select a purpose' })} className="input-style" aria-invalid={!!errors.purpose}>
             <option value="" disabled>Select Purpose</option>
             {purposeEnum.enumValues.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
         </FormField>
         <FormField name="timeline" label="Timeline" error={errors.timeline}>
-          <select id="timeline" {...register('timeline', { required: 'Please select a timeline' })} className="input-style" aria-invalid={!!errors.timeline}>
+          <select id="timeline" defaultValue="" autoComplete="off" {...register('timeline', { required: 'Please select a timeline' })} className="input-style" aria-invalid={!!errors.timeline}>
             <option value="" disabled>Select Timeline</option>
             {timelineEnum.enumValues.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
@@ -128,7 +128,7 @@ export function BuyerForm() {
                 return Number.isFinite(n) ? n : undefined;
               },
             })}
-            className="input-style"
+            className="input-style" autoComplete="off"
           />
         </FormField>
         <FormField name="budgetMax" label="Max Budget (INR, Optional)" error={errors.budgetMax}>
@@ -146,11 +146,11 @@ export function BuyerForm() {
                 return Number.isFinite(n) ? n : undefined;
               },
             })}
-            className="input-style"
+            className="input-style" autoComplete="off"
           />
         </FormField>
         <FormField name="source" label="Lead Source" error={errors.source}>
-          <select id="source" {...register('source', { required: 'Please select a source' })} className="input-style" aria-invalid={!!errors.source}>
+          <select id="source" defaultValue="" autoComplete="off" {...register('source', { required: 'Please select a source' })} className="input-style" aria-invalid={!!errors.source}>
             <option value="" disabled>Select Source</option>
             {sourceEnum.enumValues.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
