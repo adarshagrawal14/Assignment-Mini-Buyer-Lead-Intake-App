@@ -4,11 +4,23 @@ import { BuyerTable } from "./_components/buyer-table";
 import { desc } from "drizzle-orm";
 import { buyers } from "@/lib/db/schema";
 
-// This is the crucial line that solves the build error.
-// It tells Next.js to render this page dynamically on the server at request time.
+// This tells Next.js to render this page dynamically on the server at request time.
+// It is important for pages that fetch fresh data from a database.
 export const dynamic = 'force-dynamic';
 
 export default async function BuyersPage() {
+  // --- TEMPORARY DEBUGGING LOG ---
+  // This code will run on your server and print to your local terminal.
+  // It helps us verify if the .env file is being loaded correctly.
+  console.log("\n--- LOCAL ENV CHECK ---");
+  if (process.env.DATABASE_URL) {
+    console.log("✅ DATABASE_URL was found by the local server.");
+  } else {
+    console.log("❌ ERROR: DATABASE_URL IS MISSING or not loaded!");
+  }
+  console.log("----------------------\n");
+  // --- END DEBUGGING LOG ---
+
   const leads = await db.query.buyers.findMany({
     orderBy: [desc(buyers.updatedAt)],
     limit: 10,
