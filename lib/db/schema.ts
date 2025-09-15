@@ -55,17 +55,34 @@ export const buyerFormSchema = z.object({
     phone: z.string().min(10, "Phone number must be 10-15 digits.").max(15).regex(/^\d+$/, "Invalid phone number."),
     city: z.enum(cityEnum.enumValues),
     propertyType: z.enum(propertyTypeEnum.enumValues),
-    bhk: z.enum(bhkEnum.enumValues).optional(),
+    bhk: z.preprocess(
+        (val) => (val === '' || val === null || val === undefined ? undefined : val),
+        z.union([z.enum(bhkEnum.enumValues), z.undefined()])
+    ),
     purpose: z.enum(purposeEnum.enumValues),
-    budgetMin: z.coerce.number().int().positive().optional(),
-    budgetMax: z.coerce.number().int().positive().optional(),
+    budgetMin: z.preprocess(
+        (val) => {
+            if (val === '' || val === null || val === undefined) return undefined;
+            const parsed = Number(val);
+            return Number.isFinite(parsed) ? parsed : undefined;
+        },
+        z.union([z.number().int().min(0), z.undefined()])
+    ),
+    budgetMax: z.preprocess(
+        (val) => {
+            if (val === '' || val === null || val === undefined) return undefined;
+            const parsed = Number(val);
+            return Number.isFinite(parsed) ? parsed : undefined;
+        },
+        z.union([z.number().int().min(0), z.undefined()])
+    ),
     timeline: z.enum(timelineEnum.enumValues),
     source: z.enum(sourceEnum.enumValues),
     notes: z.string().max(1000, "Notes cannot exceed 1000 characters.").optional(),
     tags: z.array(z.string()).optional(),
     updatedAt: z.string().optional(), // For concurrency check
 }).refine(data => {
-    if (data.budgetMin && data.budgetMax) {
+    if (data.budgetMin !== undefined && data.budgetMax !== undefined) {
         return data.budgetMax >= data.budgetMin;
     }
     return true;

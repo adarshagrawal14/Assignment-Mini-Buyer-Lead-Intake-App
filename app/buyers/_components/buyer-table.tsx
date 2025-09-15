@@ -37,11 +37,15 @@ export function BuyerTable({ leads }: { leads: Buyer[] }) {
           )}
           {leads.map((lead) => (
             <tr key={lead.id} className="hover:bg-gray-50">
-              <td className="td-style font-medium">{lead.fullName}</td>
+              <td className="td-style font-medium">
+                <Link href={`/buyers/${lead.id}`} className="text-gray-900 hover:text-blue-700 hover:underline">
+                  {lead.fullName}
+                </Link>
+              </td>
               <td className="td-style">{lead.phone}</td>
               <td className="td-style">
-                <div className="font-medium">{lead.city}</div>
-                <div className="text-xs text-gray-500">{lead.propertyType}</div>
+                <div className="font-medium text-gray-900">{lead.city}</div>
+                <div className="text-xs text-gray-700">{lead.propertyType}</div>
               </td>
               <td className="td-style">{formatBudget(lead.budgetMin, lead.budgetMax)}</td>
               <td className="td-style">
@@ -53,9 +57,10 @@ export function BuyerTable({ leads }: { leads: Buyer[] }) {
                 {new Date(lead.updatedAt).toLocaleDateString()}
               </td>
               <td className="td-style text-right">
-                <Link href={`/buyers/${lead.id}`} className="text-blue-600 hover:underline">
-                  View / Edit
-                </Link>
+                <div className="inline-flex gap-3">
+                  <Link href={`/buyers/${lead.id}`} className="text-blue-600 hover:text-blue-700 hover:underline">View</Link>
+                  <Link href={`/buyers/${lead.id}/edit`} className="text-indigo-600 hover:text-indigo-700 hover:underline">Edit</Link>
+                </div>
               </td>
             </tr>
           ))}

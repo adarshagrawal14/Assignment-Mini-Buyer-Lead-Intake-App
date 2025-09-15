@@ -43,6 +43,12 @@ export function BuyerForm() {
       phone: "",
       email: "",
       notes: "",
+      city: "",
+      propertyType: "",
+      bhk: "",
+      purpose: "",
+      timeline: "",
+      source: "",
     }
   });
 
@@ -76,46 +82,76 @@ export function BuyerForm() {
           <input id="email" type="email" {...register('email')} className="input-style" />
         </FormField>
         <FormField name="city" label="City" error={errors.city}>
-          <select id="city" {...register('city')} className="input-style">
-            <option value="">Select City</option>
+          <select id="city" {...register('city', { required: 'Please select a city' })} className="input-style" aria-invalid={!!errors.city}>
+            <option value="" disabled>Select City</option>
             {cityEnum.enumValues.map(city => <option key={city} value={city}>{city}</option>)}
           </select>
         </FormField>
         <FormField name="propertyType" label="Property Type" error={errors.propertyType}>
-          <select id="propertyType" {...register('propertyType')} className="input-style">
-            <option value="">Select Property Type</option>
+          <select id="propertyType" {...register('propertyType', { required: 'Please select a property type' })} className="input-style" aria-invalid={!!errors.propertyType}>
+            <option value="" disabled>Select Property Type</option>
             {propertyTypeEnum.enumValues.map(type => <option key={type} value={type}>{type}</option>)}
           </select>
         </FormField>
         {showBhkField && (
           <FormField name="bhk" label="BHK" error={errors.bhk}>
-            <select id="bhk" {...register('bhk')} className="input-style">
-              <option value="">Select BHK</option>
+            <select id="bhk" {...register('bhk', { required: 'Please select BHK' })} className="input-style" aria-invalid={!!errors.bhk}>
+              <option value="" disabled>Select BHK</option>
               {bhkEnum.enumValues.map(bhk => <option key={bhk} value={bhk}>{bhk}</option>)}
             </select>
           </FormField>
         )}
         <FormField name="purpose" label="Purpose" error={errors.purpose}>
-          <select id="purpose" {...register('purpose')} className="input-style">
-            <option value="">Select Purpose</option>
+          <select id="purpose" {...register('purpose', { required: 'Please select a purpose' })} className="input-style" aria-invalid={!!errors.purpose}>
+            <option value="" disabled>Select Purpose</option>
             {purposeEnum.enumValues.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
         </FormField>
         <FormField name="timeline" label="Timeline" error={errors.timeline}>
-          <select id="timeline" {...register('timeline')} className="input-style">
-            <option value="">Select Timeline</option>
+          <select id="timeline" {...register('timeline', { required: 'Please select a timeline' })} className="input-style" aria-invalid={!!errors.timeline}>
+            <option value="" disabled>Select Timeline</option>
             {timelineEnum.enumValues.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </FormField>
         <FormField name="budgetMin" label="Min Budget (INR, Optional)" error={errors.budgetMin}>
-          <input id="budgetMin" type="number" {...register('budgetMin')} className="input-style" />
+          <input
+            id="budgetMin"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            step={1}
+            placeholder="e.g., 2500000"
+            {...register('budgetMin', {
+              setValueAs: (v) => {
+                if (v === '' || v === null || v === undefined) return undefined;
+                const n = Number(v);
+                return Number.isFinite(n) ? n : undefined;
+              },
+            })}
+            className="input-style"
+          />
         </FormField>
         <FormField name="budgetMax" label="Max Budget (INR, Optional)" error={errors.budgetMax}>
-          <input id="budgetMax" type="number" {...register('budgetMax')} className="input-style" />
+          <input
+            id="budgetMax"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            step={1}
+            placeholder="e.g., 5000000"
+            {...register('budgetMax', {
+              setValueAs: (v) => {
+                if (v === '' || v === null || v === undefined) return undefined;
+                const n = Number(v);
+                return Number.isFinite(n) ? n : undefined;
+              },
+            })}
+            className="input-style"
+          />
         </FormField>
         <FormField name="source" label="Lead Source" error={errors.source}>
-          <select id="source" {...register('source')} className="input-style">
-            <option value="">Select Source</option>
+          <select id="source" {...register('source', { required: 'Please select a source' })} className="input-style" aria-invalid={!!errors.source}>
+            <option value="" disabled>Select Source</option>
             {sourceEnum.enumValues.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </FormField>

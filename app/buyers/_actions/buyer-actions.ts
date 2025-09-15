@@ -1,7 +1,8 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { buyers, buyerHistory, buyerFormSchema } from '@/lib/db/schema';
+import { buyers, buyerHistory, buyerFormSchema, users } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -22,12 +23,33 @@ export async function createBuyer(formData: unknown) {
   const data = validatedFields.data;
 
   try {
+    // 1.5 Normalize phone and check duplicates early to avoid DB errors
+    const normalizedPhone = data.phone.trim();
+    const existing = await db
+      .select({ id: buyers.id })
+      .from(buyers)
+      .where(eq(buyers.phone, normalizedPhone))
+      .limit(1);
+
+    if (existing.length > 0) {
+      return {
+        errors: { phone: ["A lead with this phone already exists."] },
+        message: "Duplicate phone number.",
+      } as const;
+    }
+
     // 2. Perform the database operations in a transaction
       await db.transaction(async (tx) => {
+      // Ensure mock user exists to satisfy FK constraint
+      await tx
+        .insert(users)
+        .values({ id: MOCK_USER_ID, email: 'demo@example.com' })
+        .onConflictDoNothing({ target: users.id });
+
       const [result] = await tx.insert(buyers).values({
         fullName: data.fullName,
         email: data.email,
-        phone: data.phone,
+        phone: normalizedPhone,
         city: data.city,
         propertyType: data.propertyType,
         bhk: data.bhk,

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx dotenv -- next dev",
+    "dev": "dotenv -e .env -- next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -19,12 +19,12 @@
     "drizzle-orm": "^0.44.5",
     "drizzle-zod": "^0.8.3",
     "next": "15.5.3",
-    "paparse": "^5.5.3",
+    "papaparse": "^5.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "7.52.1",
     "react-hot-toast": "^2.6.0",
-    "zod": "3.25.0"
+    "zod": "4.1.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

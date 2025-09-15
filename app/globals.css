@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111827; /* gray-900 for stronger contrast */
 }
 
 @theme inline {
@@ -14,8 +14,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Force light theme for consistent contrast */
+    --background: #ffffff;
+    --foreground: #111827;
   }
 }
 
@@ -27,14 +28,21 @@ body {
 
 @layer components {
   .th-style {
-    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+    @apply px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider;
   }
 
   .td-style {
-    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-800;
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
   }
 
   .input-style {
-    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-blue-700 focus:border-blue-700 sm:text-sm;
   }
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 { @apply text-gray-900; }
+  p { @apply text-gray-900; }
+  label, small, span { @apply text-gray-900; }
+  a { @apply text-blue-700 hover:text-blue-800; }
 }
