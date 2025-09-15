@@ -1,6 +1,6 @@
 # Buyer Lead Intake App
 
-A mini-app built with Next.js and Supabase to capture, list, and manage buyer leads for a real estate business.
+A mini-app built with Next.js and Supabase/Postgres to capture, list, and manage buyer leads for a real estate business.
 
 ## 🚀 Live Demo
 
@@ -8,23 +8,19 @@ A mini-app built with Next.js and Supabase to capture, list, and manage buyer le
 
 ## ✨ Features
 
-- **Lead Management**: Full CRUD (Create, Read, Update, Delete) functionality for buyer leads.
-- **SSR Listing**: Server-side rendered and paginated list of all leads.
-- **Advanced Filtering & Search**: Filter by city, status, property type, and more. Search by name, email, or phone. All state is synced with the URL.
-- **Transactional CSV Import**: Bulk import leads from a CSV file. Invalid rows are reported back without blocking valid ones.
-- **Filtered CSV Export**: Export the current view (respecting all active filters and search queries) to a CSV file.
-- **Auth**: Secure authentication using Supabase Auth (Magic Link). Users can only edit leads they own.
-- **Lead History**: Tracks all changes made to a lead over time.
-- **Robust Validation**: End-to-end validation using Zod on both the client and server.
+- **Lead Management**: Create leads (view and basic edit pages included).
+- **Fresh SSR Listing**: Server-rendered list that always fetches fresh data and shows recent updates.
+- **Validation**: End-to-end validation using Zod on both the client and server.
+- **Duplicate Guard**: Server-side duplicate phone check prevents accidental duplicates.
+- **UI/UX**: Tailwind-based UI with improved contrast, a global top-nav, and a redesigned homepage hero.
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
-- **Database**: Postgres (via Supabase)
-- **ORM**: Drizzle ORM
-- **Authentication**: Supabase Auth
-- **UI**: Tailwind CSS (+ shadcn/ui for components)
+- **Database**: Supabase Postgres (pooled port 6543)
+- **ORM**: Drizzle ORM (`node-postgres` driver)
+- **UI**: Tailwind CSS
 - **Validation**: Zod
 - **Forms**: React Hook Form
 
@@ -52,16 +48,18 @@ A mini-app built with Next.js and Supabase to capture, list, and manage buyer le
     ```
 
 3.  **Set up environment variables:**
-    -   Create a new project on Supabase.
-    -   Copy `.env.example` to `.env`.
-    -   Fill in your Supabase Project URL, Anon Key, and Database Connection URI in the `.env` file.
+    - Create a new project on Supabase.
+    - Create a `.env` file in the repo root with:
+      ```bash
+      DATABASE_URL=postgres://postgres:YOUR_DB_PASSWORD@db.<PROJECT_REF>.supabase.co:6543/postgres
+      NEXT_PUBLIC_SUPABASE_URL=https://<PROJECT_REF>.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+      ```
+      - Use the Pooling (port 6543) connection string from Supabase → Database → Connection string.
+      - Ensure `<PROJECT_REF>` matches your project reference exactly.
 
-4.  **Run database migrations:**
-    This will sync the Drizzle schema with your Supabase database.
-    ```bash
-    npm run drizzle-kit:generate
-    npm run drizzle-kit:push
-    ```
+4.  **Database schema:**
+    - The schema is managed with Drizzle. This template does not include migration scripts; tables are created on first use in Supabase by pushing SQL if you add migrations later.
 
 5.  **Run the development server:**
     ```bash
@@ -75,21 +73,23 @@ A mini-app built with Next.js and Supabase to capture, list, and manage buyer le
 
 ### Validation Strategy
 
-Validation logic is defined once using **Zod** in `lib/db/schema.ts`. This single source of truth is used across the application:
+Validation logic is defined once using **Zod** in `lib/db/schema.ts`. Highlights:
 1.  **Client-Side**: In forms, via `@hookform/resolvers/zod`, providing instant feedback to the user.
 2.  **Server-Side**: In all Server Actions, ensuring data integrity before it hits the database. This prevents malicious or malformed API requests.
+3.  Optional numeric budgets are safely coerced and allow empty values; BHK is required only for Apartment/Villa.
 
-### SSR vs. Client Components
+### Pages & Routing
 
-The application follows the Next.js App Router paradigm:
--   **Server Components (`/buyers/page.tsx`)**: Used for data fetching (reading `searchParams`, querying the DB) and rendering the initial HTML. This makes the initial page load fast and SEO-friendly.
--   **Client Components (`/buyers/_components/search-filter.tsx`)**: Used for interactive UI elements like search inputs, dropdown filters, and forms. They interact with the router to update URL search params without full page reloads.
+- `/` Home (hero + CTAs)
+- `/buyers` Server-rendered list (fresh data; revalidate=0)
+- `/buyers/new` Client form with Zod + RHF
+- `/buyers/[id]` Detail page
+- `/buyers/[id]/edit` Edit page (basic)
 
-### Ownership & Security
+### Notes
 
--   **Authentication**: Handled by Supabase Auth and enforced by Next.js middleware.
--   **Ownership**: All leads have an `ownerId`. Server Actions for updating or deleting a lead contain an explicit check to ensure the logged-in user's ID matches the lead's `ownerId`. This prevents unauthorized modifications.
--   **Rate Limiting**: Critical server actions (create, update) are rate-limited by IP using `@upstash/ratelimit` to prevent abuse.
+- A mock `ownerId` is used for demo purposes. Replace with real auth when integrating.
+- Duplicate phone numbers are blocked with a server-side check and DB unique index.
 
 ## ✅ Scope & Status
 
