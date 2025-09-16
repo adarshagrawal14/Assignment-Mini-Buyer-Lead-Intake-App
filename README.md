@@ -4,7 +4,7 @@ A mini-app built with Next.js and Supabase/Postgres to capture, list, and manage
 
 ## 🚀 Live Demo
 
-[Link to your Vercel deployment]
+[buyer-lead-2hx32nrjz-adarshagrawal14s-projects.vercel.app](https://buyer-lead-2hx32nrjz-adarshagrawal14s-projects.vercel.app)
 
 ## ✨ Features
 
@@ -110,3 +110,11 @@ Validation logic is defined once using **Zod** in `lib/db/schema.ts`. Highlights
 
 -   **Full Admin Role**: An admin role was not implemented to keep the ownership logic simple and focused on the core user flow as per the assignment.
 -   **File Uploads**: Skipped to maintain focus on the primary data model. Supabase Storage could be easily integrated for this in the future.
+
+---
+
+## 👤 Author & Links
+
+- **Author**: Adarsh Agrawal
+- **LinkedIn**: [www.linkedin.com/in/adarsh-agrawal-7201a2264](https://www.linkedin.com/in/adarsh-agrawal-7201a2264)
+- **Repository**: [GitHub – BUYER-LEAD-APP](https://github.com/adarshagrawal14/BUYER-LEAD-APP)
